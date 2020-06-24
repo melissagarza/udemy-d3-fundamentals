@@ -1,45 +1,36 @@
 document.addEventListener('DOMContentLoaded', (event) => {
-  const width = 300;
+  const width = 200;
   const height = 100;
-  const padding = 2;
-  const dataset = [5, 10, 13, 19, 21, 25, 11, 25, 22, 18, 7];
 
-  const colorPicker = (v) => {
-    if (v <= 20) {
-      return '#666666';
-    } else if (v > 20) {
-      return '#ff0033';
-    }
-  };
+  const monthlySales = [
+    {'month': 10, 'sales': 20},
+    {'month': 20, 'sales': 14},
+    {'month': 30, 'sales': 20},
+    {'month': 40, 'sales': 21},
+    {'month': 50, 'sales': 15},
+    {'month': 60, 'sales': 22},
+    {'month': 70, 'sales': 9},
+    {'month': 80, 'sales': 6},
+    {'month': 90, 'sales': 23},
+    {'month': 100, 'sales': 7}
+  ];
 
-  const svg = d3.select('body')
-    .append('svg')
-      .attr('width', width)
-      .attr('height', height);
-  
-  svg.selectAll('rect')
-    .data(dataset)
-    .enter()
-    .append('rect')
-      .attr({
-        x: (d, i) => i * (width / dataset.length),
-        y: d => height - (d * 4),
-        width: width / dataset.length - padding,
-        height: d => d * 4,
-        fill: d => colorPicker(d)
-      });
+  const lineFun = d3.svg.line()
+    .x(d => d.month * 2)
+    .y(d => d.sales)
+    .interpolate('linear');
 
-  svg.selectAll('text')
-    .data(dataset)
-    .enter()
-    .append('text')
-      .text(d => d)
-        .attr({
-          'text-anchor': 'middle',
-          x: (d, i) => i * (width / dataset.length) + (width / dataset.length - padding) / 2,
-          y: d => height - (d * 4) + 14,
-          'font-family': 'sans-serif',
-          'font-size': 12,
-          'fill': '#ffffff'
-        })
+  const svg = d3.select('body').append('svg')
+    .attr({
+      width,
+      height
+    });
+
+  const viz = svg.append('path')
+    .attr({
+      d: lineFun(monthlySales),
+      stroke: 'purple',
+      'stroke-width': 2,
+      fill: 'none'
+    });
 });
