@@ -16,5 +16,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
       .attr('x', (d, i) => i * (width / dataset.length))
       .attr('y', d => height - (d * 4))
       .attr('width', width / dataset.length - padding)
-      .attr('height', d => d * 4);
+      .attr('height', d => d * 4)
+      .attr('fill', d => `rgb(0, ${d * 10}, 0)`);
 });
