@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const width = 300;
   const height = 100;
   const padding = 2;
-  const dataset = [5, 10, 14, 20, 25];
+  const dataset = [5, 10, 13, 19, 21, 25, 11, 25, 22, 18, 7];
 
   const colorPicker = (v) => {
     if (v <= 20) {
@@ -28,4 +28,18 @@ document.addEventListener('DOMContentLoaded', (event) => {
         height: d => d * 4,
         fill: d => colorPicker(d)
       });
+
+  svg.selectAll('text')
+    .data(dataset)
+    .enter()
+    .append('text')
+      .text(d => d)
+        .attr({
+          'text-anchor': 'middle',
+          x: (d, i) => i * (width / dataset.length) + (width / dataset.length - padding) / 2,
+          y: d => height - (d * 4) + 14,
+          'font-family': 'sans-serif',
+          'font-size': 12,
+          'fill': '#ffffff'
+        })
 });
