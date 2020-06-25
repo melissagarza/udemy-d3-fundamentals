@@ -21,6 +21,22 @@ document.addEventListener('DOMContentLoaded', (event) => {
       .attr('fill', 'none');
   };
 
+  const showTotals = () => {
+    let table = d3.select('body').append('table');
+    let salesTotal = 0;
+
+    for (let i = 0; i < ds.length; i++) {
+      salesTotal += ds[i]['sales'] * 1;
+    }
+
+    let tr = table.selectAll('tr')
+      .data([1])
+      .enter()
+      .append('tr')
+      .append('td')
+      .text(`Sales Total: ${salesTotal}`);
+  };
+
   d3.csv('MonthlySales.csv', (err, data) => {
     if (err) console.log(err);
 
@@ -28,5 +44,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     ds = data;
 
     buildLine();
+    showTotals();
   });
 });
