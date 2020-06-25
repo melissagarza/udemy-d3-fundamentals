@@ -24,17 +24,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const showTotals = () => {
     let table = d3.select('body').append('table');
     let salesTotal = 0;
+    let salesAvg = 0;
+    let metrics = [];
 
     for (let i = 0; i < ds.length; i++) {
       salesTotal += ds[i]['sales'] * 1;
     }
 
+    salesAvg = salesTotal / ds.length;
+    metrics.push(`Sales Total: ${salesTotal}`);
+    metrics.push(`Sales Average: ${salesAvg.toFixed(2)}`);
+
     let tr = table.selectAll('tr')
-      .data([1])
+      .data(metrics)
       .enter()
       .append('tr')
       .append('td')
-      .text(`Sales Total: ${salesTotal}`);
+      .text(d => d);
   };
 
   d3.csv('MonthlySales.csv', (err, data) => {
