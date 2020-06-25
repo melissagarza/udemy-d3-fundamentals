@@ -1,5 +1,32 @@
 document.addEventListener('DOMContentLoaded', (event) => {
-  d3.select("body")
-    .append("h1")
-    .text("hello world!");
+
+  const width = 400;
+  const height = 100;
+  let ds;
+
+  const buildLine = () => {
+    let lineFun = d3.svg.line()
+      .x(d => (d.month - 20130001) / 3.25)
+      .y(d => height - d.sales)
+      .interpolate('linear');
+
+    let svg = d3.select('body').append('svg')
+      .attr('width', width)
+      .attr('height', height);
+
+    let viz = svg.append('path')
+      .attr('d', lineFun(ds))
+      .attr('stroke', 'purple')
+      .attr('stroke-width', 2)
+      .attr('fill', 'none');
+  };
+
+  d3.csv('MonthlySales.csv', (err, data) => {
+    if (err) console.log(err);
+
+    console.log(data);
+    ds = data;
+
+    buildLine();
+  });
 });
