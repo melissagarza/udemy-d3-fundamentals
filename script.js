@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', (event) => {
 
-  const width = 400;
+  const width = 300;
   const height = 100;
+  const padding = 20;
 
   const buildLine = data => {
 
@@ -10,11 +11,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
         d3.min(data.monthlySales, d => d.month),
         d3.max(data.monthlySales, d => d.month)
       ])
-      .range([0, width]);
+      .range([padding, width - padding]);
 
     const scaleY = d3.scale.linear()
       .domain([0, d3.max(data.monthlySales, d => d.sales)])
-      .range([height, 0]);
+      .range([height - padding, 10]);
+
+    const axisY = d3.svg.axis()
+      .scale(scaleY)
+      .orient('left')
+      .ticks(4);
 
     const lineFun = d3.svg.line()
       .x(d => scaleX(d.month))
@@ -24,6 +30,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const svg = d3.select('body').append('svg')
       .attr('width', width)
       .attr('height', height);
+    
+    const axis = svg.append('g').call(axisY)
+      .attr('class', 'axis')
+      .attr('transform', `translate(${padding}, 0)`);
 
     const viz = svg.append('path')
       .attr('d', lineFun(data.monthlySales))
