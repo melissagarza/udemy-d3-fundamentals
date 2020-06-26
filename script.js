@@ -4,16 +4,28 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const height = 100;
 
   const buildLine = data => {
-    let lineFun = d3.svg.line()
-      .x(d => (d.month - 20130001) / 3.25)
-      .y(d => height - d.sales)
+
+    const scaleX = d3.scale.linear()
+      .domain([
+        d3.min(data.monthlySales, d => d.month),
+        d3.max(data.monthlySales, d => d.month)
+      ])
+      .range([0, width]);
+
+    const scaleY = d3.scale.linear()
+      .domain([0, d3.max(data.monthlySales, d => d.sales)])
+      .range([height, 0]);
+
+    const lineFun = d3.svg.line()
+      .x(d => scaleX(d.month))
+      .y(d => scaleY(d.sales))
       .interpolate('linear');
 
-    let svg = d3.select('body').append('svg')
+    const svg = d3.select('body').append('svg')
       .attr('width', width)
       .attr('height', height);
 
-    let viz = svg.append('path')
+    const viz = svg.append('path')
       .attr('d', lineFun(data.monthlySales))
       .attr('stroke', 'purple')
       .attr('stroke-width', 2)
