@@ -25,10 +25,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
       .text(`${data.category} Sales (2013)`);
   };
 
-  d3.json('MonthlySalesbyCategory.json', (err, data) => {
+  d3.json('MonthlySalesbyCategoryMultiple.json', (err, data) => {
     if (err) console.log(err);
 
-    buildLine(data);
-    showHeader(data);
+    data.contents.forEach(data => {
+      buildLine(data);
+      showHeader(data);
+    });
   });
 });
