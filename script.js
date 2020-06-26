@@ -4,26 +4,40 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const height = 100;
   const padding = 20;
 
-  const buildLine = data => {
+  const getDate = d => {
+    const strDate = new String(d);
+    const year = strDate.substr(0, 4);
+    const month = strDate.substr(4, 2) - 1;
+    const day = strDate.substr(6, 2);
 
-    const scaleX = d3.scale.linear()
-      .domain([
-        d3.min(data.monthlySales, d => d.month),
-        d3.max(data.monthlySales, d => d.month)
-      ])
+    return new Date(year, month, day);
+  };
+  
+  const buildLine = data => {
+    
+    const minDate = getDate(data.monthlySales[0]['month']);
+    const maxDate = getDate(data.monthlySales[data.monthlySales.length - 1]['month']);
+
+    const scaleX = d3.time.scale()
+      .domain([minDate, maxDate])
       .range([padding, width - padding]);
 
     const scaleY = d3.scale.linear()
       .domain([0, d3.max(data.monthlySales, d => d.sales)])
       .range([height - padding, 10]);
 
-    const axisY = d3.svg.axis()
+    const genAxisX = d3.svg.axis()
+      .scale(scaleX)
+      .orient('bottom')
+      .tickFormat(d3.time.format('%b'));
+
+    const genAxisY = d3.svg.axis()
       .scale(scaleY)
       .orient('left')
       .ticks(4);
 
     const lineFun = d3.svg.line()
-      .x(d => scaleX(d.month))
+      .x(d => scaleX(getDate(d.month)))
       .y(d => scaleY(d.sales))
       .interpolate('linear');
 
@@ -31,7 +45,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
       .attr('width', width)
       .attr('height', height);
     
-    const axis = svg.append('g').call(axisY)
+    const axisX = svg.append('g').call(genAxisX)
+      .attr('class', 'axis')
+      .attr('transform', `translate(0, ${height - padding})`);
+
+    const axisY = svg.append('g').call(genAxisY)
       .attr('class', 'axis')
       .attr('transform', `translate(${padding}, 0)`);
 
