@@ -25,12 +25,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
       .text(`${data.category} Sales (2013)`);
   };
 
-  d3.json('MonthlySalesbyCategoryMultiple.json', (err, data) => {
-    if (err) console.log(err);
+  d3.json('https://api.github.com/repos/bsullins/d3js-resources/contents/monthlySalesbyCategoryMultiple.json',
+    (err, data) => {
+      if (err) console.log(err);
 
-    data.contents.forEach(data => {
-      buildLine(data);
-      showHeader(data);
+      const decodedData = JSON.parse(window.atob(data.content));
+
+      decodedData.contents.forEach(data => {
+        buildLine(data);
+        showHeader(data);
+      });
     });
-  });
 });
