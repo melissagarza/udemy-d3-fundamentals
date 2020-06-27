@@ -62,4 +62,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
           fill: '#666666',
           'text-anchor': 'start'
         });
+
+  d3.select('select')
+    .on('change', d => {
+      const selection = d3.select('select').node().value;
+
+      svg.selectAll('text')
+        .data(monthlySales)
+        .text(d => showMinMax(monthlySales, 'sales', d.sales, selection));
+    });
 });
