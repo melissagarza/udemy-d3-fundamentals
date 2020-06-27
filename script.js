@@ -1,132 +1,45 @@
 document.addEventListener('DOMContentLoaded', (event) => {
-
   const width = 300;
   const height = 100;
-  const padding = 20;
+  const padding = 2;
+  const dataset = [5, 10, 13, 19, 21, 25, 11, 25, 22, 18, 7];
 
-  const getDate = d => {
-    const strDate = new String(d);
-    const year = strDate.substr(0, 4);
-    const month = strDate.substr(4, 2) - 1;
-    const day = strDate.substr(6, 2);
-
-    return new Date(year, month, day);
+  const colorPicker = (v) => {
+    if (v <= 20) {
+      return '#666666';
+    } else if (v > 20) {
+      return '#ff0033';
+    }
   };
-  
-  const buildLine = data => {
-    
-    const minDate = getDate(data.monthlySales[0]['month']);
-    const maxDate = getDate(data.monthlySales[data.monthlySales.length - 1]['month']);
 
-    const scaleX = d3.time.scale()
-      .domain([minDate, maxDate])
-      .range([padding, width - padding]);
-
-    const scaleY = d3.scale.linear()
-      .domain([0, d3.max(data.monthlySales, d => d.sales)])
-      .range([height - padding, 10]);
-
-    const genAxisX = d3.svg.axis()
-      .scale(scaleX)
-      .orient('bottom')
-      .tickFormat(d3.time.format('%b'));
-
-    const genAxisY = d3.svg.axis()
-      .scale(scaleY)
-      .orient('left')
-      .ticks(4);
-
-    const lineFun = d3.svg.line()
-      .x(d => scaleX(getDate(d.month)))
-      .y(d => scaleY(d.sales))
-      .interpolate('linear');
-
-    const svg = d3.select('body').append('svg')
+  const svg = d3.select('body')
+    .append('svg')
       .attr('width', width)
-      .attr('height', height)
-      .attr('class', `svg-${(data.category).toLowerCase()}`);
-    
-    const axisX = svg.append('g').call(genAxisX)
-      .attr('class', 'axis-x')
-      .attr('transform', `translate(0, ${height - padding})`);
-
-    const axisY = svg.append('g').call(genAxisY)
-      .attr('class', 'axis-y')
-      .attr('transform', `translate(${padding}, 0)`);
-
-    const viz = svg.append('path')
-      .attr('d', lineFun(data.monthlySales))
-      .attr('class', `path-${(data.category).toLowerCase()}`)
-      .attr('stroke', 'purple')
-      .attr('stroke-width', 2)
-      .attr('fill', 'none');
-  };
-
-  const updateLine = data => {
-    
-    const minDate = getDate(data.monthlySales[0]['month']);
-    const maxDate = getDate(data.monthlySales[data.monthlySales.length - 1]['month']);
-
-    const scaleX = d3.time.scale()
-      .domain([minDate, maxDate])
-      .range([padding, width - padding]);
-
-    const scaleY = d3.scale.linear()
-      .domain([0, d3.max(data.monthlySales, d => d.sales)])
-      .range([height - padding, 10]);
-
-    const genAxisX = d3.svg.axis()
-      .scale(scaleX)
-      .orient('bottom')
-      .tickFormat(d3.time.format('%b'))
-      .ticks(data.monthlySales.length - 1);
-
-    const genAxisY = d3.svg.axis()
-      .scale(scaleY)
-      .orient('left')
-      .ticks(4);
-
-    const lineFun = d3.svg.line()
-      .x(d => scaleX(getDate(d.month)))
-      .y(d => scaleY(d.sales))
-      .interpolate('linear');
-
-    const svg = d3.select('body').select(`.svg-${(data.category).toLowerCase()}`);
-    const axisX = svg.selectAll('g.axis-x').call(genAxisX);
-    const axisY = svg.selectAll('g.axis-y').call(genAxisY);
-
-    const viz = svg.selectAll(`.path-${(data.category).toLowerCase()}`)
-      .transition()
-      .duration(1000)
-      .ease('linear')
-      .attr('d', lineFun(data.monthlySales));
-  };
-
-  const showHeader = data => {
-    d3.select('body').append('h1')
-      .text(`${data.category} Sales (2013)`);
-  };
-
-  d3.json('https://api.github.com/repos/bsullins/d3js-resources/contents/monthlySalesbyCategoryMultiple.json',
-    (err, data) => {
-      if (err) console.log(err);
-
-      let decodedData = JSON.parse(window.atob(data.content));
-
-      decodedData.contents.forEach(data => {
-        buildLine(data);
-        showHeader(data);
+      .attr('height', height);
+  
+  svg.selectAll('rect')
+    .data(dataset)
+    .enter()
+    .append('rect')
+      .attr({
+        x: (d, i) => i * (width / dataset.length),
+        y: d => height - (d * 4),
+        width: width / dataset.length - padding,
+        height: d => d * 4,
+        fill: d => colorPicker(d)
       });
 
-      d3.select('select')
-        .on('change', (d, i) => {
-          const selection = d3.select('#date-option').node().value;
-
-          decodedData = JSON.parse(window.atob(data.content));
-          decodedData.contents.forEach(data => {
-            data.monthlySales.splice(0, data.monthlySales.length - selection);
-            updateLine(data);
-          });
-        });
-    });
+  svg.selectAll('text')
+    .data(dataset)
+    .enter()
+    .append('text')
+      .text(d => d)
+        .attr({
+          'text-anchor': 'middle',
+          x: (d, i) => i * (width / dataset.length) + (width / dataset.length - padding) / 2,
+          y: d => height - (d * 4) + 14,
+          'font-family': 'sans-serif',
+          'font-size': 12,
+          'fill': '#ffffff'
+        })
 });
