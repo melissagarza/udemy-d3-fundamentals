@@ -96,6 +96,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const axisY = svg.selectAll('g.axis-y').call(genAxisY);
 
     const viz = svg.selectAll(`.path-${(data.category).toLowerCase()}`)
+      .transition()
+      .duration(1000)
+      .ease('linear')
       .attr('d', lineFun(data.monthlySales));
   };
 
