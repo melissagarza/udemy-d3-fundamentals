@@ -18,6 +18,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const minDate = getDate(data.monthlySales[0]['month']);
     const maxDate = getDate(data.monthlySales[data.monthlySales.length - 1]['month']);
 
+    const tooltip = d3.select('body').append('div')
+      .attr('class', 'tooltip')
+      .style('opacity', 0);
+
     const scaleX = d3.time.scale()
       .domain([minDate, maxDate])
       .range([padding, width - padding]);
@@ -53,6 +57,29 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const axisY = svg.append('g').call(genAxisY)
       .attr('class', 'axis-y')
       .attr('transform', `translate(${padding}, 0)`);
+
+    const dots = svg.selectAll('circle')
+      .data(data.monthlySales)
+      .enter()
+      .append('circle')
+        .attr('cx', d => scaleX(getDate(d.month)))
+        .attr('cy', d => scaleY(d.sales))
+        .attr('r', 4)
+        .attr('fill', '#666666')
+        .attr('class', `circle-${data.category.toLowerCase()}`)
+        .on('mouseover', d => {
+          tooltip.transition()
+            .duration(500)
+            .style('opacity', 0.85);
+          tooltip.html(`<strong>Sales $${d.sales}K</strong>`)
+            .style('left', `${d3.event.pageX}px`)
+            .style('top', `${d3.event.pageY - 28}px`);
+        })
+        .on('mouseout', d => {
+          tooltip.transition()
+            .duration(300)
+            .style('opacity', 0);
+        });
 
     const viz = svg.append('path')
       .attr('d', lineFun(data.monthlySales))
