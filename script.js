@@ -21,25 +21,25 @@ document.addEventListener('DOMContentLoaded', (event) => {
     .data(dataset)
     .enter()
     .append('rect')
-      .attr({
-        x: (d, i) => i * (width / dataset.length),
-        y: d => height - (d * 4),
-        width: width / dataset.length - padding,
-        height: d => d * 4,
-        fill: d => colorPicker(d)
-      });
+      .attr('x', (d, i) => i * (width / dataset.length))
+      .attr('y', d => height - (d * 4))
+      .attr('width', width / dataset.length - padding)
+      .attr('height', d => d * 4)
+      .attr('fill', d => colorPicker(d))
+      .on('mouseover', (d, i, nodes) => {
+        const selected = d3.select(nodes[i]);
 
-  svg.selectAll('text')
-    .data(dataset)
-    .enter()
-    .append('text')
-      .text(d => d)
-        .attr({
-          'text-anchor': 'middle',
-          x: (d, i) => i * (width / dataset.length) + (width / dataset.length - padding) / 2,
-          y: d => height - (d * 4) + 14,
-          'font-family': 'sans-serif',
-          'font-size': 12,
-          'fill': '#ffffff'
-        })
+        svg.append('text')
+          .text(d)
+          .attr('text-anchor', 'middle')
+          .attr('x', parseFloat(selected.attr('x')) + parseFloat(selected.attr('width') / 2))
+          .attr('y', parseFloat(selected.attr('y')) + 12)
+          .attr('font-family', 'sans-serif')
+          .attr('font-size', 12)
+          .attr('fill', '#ffffff')
+          .attr('id', 'tooltip');
+      })
+      .on('mouseout', (d, i, nodes) => {
+        d3.select('#tooltip').remove();
+      });
 });
