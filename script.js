@@ -122,6 +122,29 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const axisX = svg.selectAll('g.axis-x').call(genAxisX);
     const axisY = svg.selectAll('g.axis-y').call(genAxisY);
 
+    const dots = svg.selectAll('circle')
+      .data(data.monthlySales)
+      .attr('cx', d => scaleX(getDate(d.month)))
+      .attr('cy', d => scaleY(d.sales))
+      .attr('r', 4)
+      .attr('fill', '#666666')
+      .attr('class', `circle-${data.category.toLowerCase()}`)
+      .on('mouseover', d => {
+        tooltip.transition()
+          .duration(500)
+          .style('opacity', 0.85);
+        tooltip.html(`<strong>Sales $${d.sales}K</strong>`)
+          .style('left', `${d3.event.pageX}px`)
+          .style('top', `${d3.event.pageY - 28}px`);
+      })
+      .on('mouseout', d => {
+        tooltip.transition()
+          .duration(300)
+          .style('opacity', 0);
+      });
+    dots.enter().append('circle');
+    dots.exit().remove();
+
     const viz = svg.selectAll(`.path-${(data.category).toLowerCase()}`)
       .transition()
       .duration(1000)
